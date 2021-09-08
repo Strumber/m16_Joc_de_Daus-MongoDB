@@ -34,17 +34,7 @@ public class Controlador {
 		return "login";
 	}
 
-	// 5 . GET /players/: retorna el llistat de tots els
-	// jugadors del sistema amb el seu percentatge mig d’èxits
-
-	@GetMapping("/players")
-	public List<Player> getPlayer() {
-		// model.addAttribute("titulo", "JOC DE DAUS");
-		List<Player> lista = playerRepositori.findAll();
-
-		// model.addAttribute("players", lista);
-		return lista;
-	}
+	
 
 	// 1 POST: /players : crea un jugador
 	@PostMapping("/players")
@@ -71,8 +61,9 @@ public class Controlador {
 	// 3 POST /players/{id}/games/ : un jugador específic realitza una tirada dels
 	// daus.
 	@PostMapping("/players/{usuari_id}/games")
-	public void crearGame(@PathVariable("usuari_id") int usuari_id, @RequestBody Game game) {
+	public String crearGame(@PathVariable("usuari_id") int usuari_id, @RequestBody Game game) {
 
+		String ResultatTirada;
 		game.setId(idGame);
 		game.setUsuari_id(usuari_id);
 		game.setDau1(((int) (Math.random() * (6 - 1)) + 1));
@@ -80,13 +71,15 @@ public class Controlador {
 
 		if (game.getDau1() + game.getDau2() == 7) {
 			game.setResultat(true);
+			ResultatTirada= (game.getDau1()+game.getDau2()) +" :Has encertat";
 		} else {
 			game.setResultat(false);
+			ResultatTirada= (game.getDau1()+game.getDau2()) +" :no has encertat";
 		}
 
 		gameRepositori.save(game);
 		idGame++;
-
+		return ResultatTirada;
 	}
 
 	// 4 DELETE /players/{id}/games: elimina les tirades del jugador
@@ -106,4 +99,16 @@ public class Controlador {
 		}
 
 	}
+	
+	// 5 . GET /players/: retorna el llistat de tots els
+		// jugadors del sistema amb el seu percentatge mig d’èxits
+
+		@GetMapping("/players")
+		public List<Player> getPlayer() {
+			// model.addAttribute("titulo", "JOC DE DAUS");
+			List<Player> lista = playerRepositori.findAll();
+
+			// model.addAttribute("players", lista);
+			return lista;
+		}
 }
