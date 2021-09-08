@@ -20,10 +20,10 @@ import cat.daus.repository.PlayerRepository;
 @RestController
 @RequestMapping("")
 public class Controlador {
-	int idGame=1;
+	int idGame = 1;
 	@Autowired
 	private PlayerRepository playerRepositori;
-	
+
 	@Autowired
 	private GameRepositori gameRepositori;
 
@@ -56,56 +56,54 @@ public class Controlador {
 
 	// 2 PUT /players : modifica el nom del jugador
 
-	@PutMapping ("/players/{usuari_id}")
-		public String modifPlayer(@PathVariable("usuari_id") int usuari_id ,
-                @RequestBody Player usuari) {
-		
-		//PlayerReposotory.existById(usuario_id);
-		if ( playerRepositori.existsById(usuari_id)){
-            playerRepositori.save(usuari);
-            return usuari +" modificat";
-        }else{
-            return "l' usuari " + usuari_id +"No s' ha pogut modificar";
-        }
+	@PutMapping("/players/{usuari_id}")
+	public String modifPlayer(@PathVariable("usuari_id") int usuari_id, @RequestBody Player usuari) {
+
+		// PlayerReposotory.existById(usuario_id);
+		if (playerRepositori.existsById(usuari_id)) {
+			playerRepositori.save(usuari);
+			return usuari + " modificat";
+		} else {
+			return "l' usuari " + usuari_id + "No s' ha pogut modificar";
+		}
 	}
-		
-		
-	//3 POST /players/{id}/games/ : un jugador específic realitza una tirada dels daus.
-		@PostMapping("/players/{usuari_id}/games")
-		 public void crearGame(@PathVariable("usuari_id") int usuari_id, @RequestBody Game game){
-				
+
+	// 3 POST /players/{id}/games/ : un jugador específic realitza una tirada dels
+	// daus.
+	@PostMapping("/players/{usuari_id}/games")
+	public void crearGame(@PathVariable("usuari_id") int usuari_id, @RequestBody Game game) {
+
 		game.setId(idGame);
 		game.setUsuari_id(usuari_id);
-		game.setDau1(((int) (Math.random() * (6-1))+ 1));
-		game.setDau2(((int) (Math.random() * (6-1))+ 1));	
-		
-		if (game.getDau1()+game.getDau2()==7) {
+		game.setDau1(((int) (Math.random() * (6 - 1)) + 1));
+		game.setDau2(((int) (Math.random() * (6 - 1)) + 1));
+
+		if (game.getDau1() + game.getDau2() == 7) {
 			game.setResultat(true);
-		}else {
+		} else {
 			game.setResultat(false);
 		}
-			
+
 		gameRepositori.save(game);
 		idGame++;
-		
-	}
-		
-		// 4 DELETE /players/{id}/games: elimina les tirades del jugador
 
-		@DeleteMapping("/players/{usuari_id}/games")
-		
-		public String eliminaTiradesPlayer (@PathVariable("usuari_id") int usuari_id) {
-			
-			if(playerRepositori.findById(usuari_id)!=null && gameRepositori.existsGamesByUsuariId(usuari_id)) {
-				
-				gameRepositori.deleteGamesByUsuariId(usuari_id);
-				
-				return "Partides de l' usuari : " + usuari_id + " eliminades" ;
-			} else {
-				
-				return "L' ususari seleccionat no te cap partida";
-			}
-				
-			//push Delete
+	}
+
+	// 4 DELETE /players/{id}/games: elimina les tirades del jugador
+
+	@DeleteMapping("/players/{usuari_id}/games")
+
+	public String eliminaTiradesPlayer(@PathVariable("usuari_id") int usuari_id) {
+
+		if (playerRepositori.findById(usuari_id) != null && gameRepositori.existsGamesByUsuariId(usuari_id)) {
+
+			gameRepositori.deleteGamesByUsuariId(usuari_id);
+
+			return "Partides de l' usuari : " + usuari_id + " eliminades";
+		} else {
+
+			return "L' ususari seleccionat no te cap partida";
 		}
+
+	}
 }
