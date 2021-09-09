@@ -119,5 +119,28 @@ public class Controlador {
 		return allPlayersStadistics.toString();
 
 	}
+	
+	//6. GET /players/{id}/games: retorna el llistat de jugades per un jugador.
+	
+	 @GetMapping(value="/player/{usuariId}/games")
+	 public List<Game> getListGamesOneplayer(@PathVariable("usuariId") int usuariId){
+	       //retorna totes les partides d'un jugador
+	        
+	        if(playerRepositori.findById(usuariId)!=null){
+	            List<Game> partidasplayer=gameRepositori.findGamesByUsuariId(usuariId);
+	              return partidasplayer;
+	        }else{
+	            
+	            return null;
+	        }
+	   
+	        
+	    }
+	
+	
+	
+	
+	
+	
 
 }
