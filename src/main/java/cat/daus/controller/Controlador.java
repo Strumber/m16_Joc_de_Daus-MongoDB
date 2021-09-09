@@ -1,6 +1,7 @@
 package cat.daus.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cat.daus.model.Game;
 import cat.daus.model.Player;
+import cat.daus.model.StadisticsPlayer;
 import cat.daus.repository.GameRepositori;
 import cat.daus.repository.PlayerRepository;
 
@@ -33,8 +35,6 @@ public class Controlador {
 
 		return "login";
 	}
-
-	
 
 	// 1 POST: /players : crea un jugador
 	@PostMapping("/players")
@@ -71,10 +71,10 @@ public class Controlador {
 
 		if (game.getDau1() + game.getDau2() == 7) {
 			game.setResultat(true);
-			ResultatTirada= (game.getDau1()+game.getDau2()) +" :Has encertat";
+			ResultatTirada = (game.getDau1() + game.getDau2()) + " :Has encertat";
 		} else {
 			game.setResultat(false);
-			ResultatTirada= (game.getDau1()+game.getDau2()) +" :no has encertat";
+			ResultatTirada = (game.getDau1() + game.getDau2()) + " :no has encertat";
 		}
 
 		gameRepositori.save(game);
@@ -99,16 +99,25 @@ public class Controlador {
 		}
 
 	}
-	
+
 	// 5 . GET /players/: retorna el llistat de tots els
-		// jugadors del sistema amb el seu percentatge mig d’èxits
+	// jugadors del sistema amb el seu percentatge mig d’èxits
 
-		@GetMapping("/players")
-		public List<Player> getPlayer() {
-			// model.addAttribute("titulo", "JOC DE DAUS");
-			List<Player> lista = playerRepositori.findAll();
+	@GetMapping("/players")
+	public String getAllPlayer() {
+		
+		List<StadisticsPlayer> allPlayersStadistics = new ArrayList<StadisticsPlayer>();
+		List<Player> allusers = new ArrayList<Player>();
+		List<Game> allPartidas = new ArrayList<Game>();
 
-			// model.addAttribute("players", lista);
-			return lista;
+		allusers.addAll(playerRepositori.findAll());
+		for (Player u : allusers) {
+
+			allPartidas = gameRepositori.findGamesByUsuariId(u.getId());
+			allPlayersStadistics.add(new StadisticsPlayer(u, allPartidas));
 		}
+		return allPlayersStadistics.toString();
+
+	}
+
 }
