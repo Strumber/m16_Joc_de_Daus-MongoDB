@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import cat.daus.model.Ranking;
 import cat.daus.model.Game;
 import cat.daus.model.Player;
 import cat.daus.model.StadisticsPlayer;
@@ -105,7 +105,7 @@ public class Controlador {
 
 	@GetMapping("/players")
 	public String getAllPlayer() {
-		
+
 		List<StadisticsPlayer> allPlayersStadistics = new ArrayList<StadisticsPlayer>();
 		List<Player> allusers = new ArrayList<Player>();
 		List<Game> allPartidas = new ArrayList<Game>();
@@ -113,34 +113,79 @@ public class Controlador {
 		allusers.addAll(playerRepositori.findAll());
 		for (Player u : allusers) {
 
-			allPartidas = gameRepositori.findGamesByUsuariId(u.getId());
+			allPartidas = gameRepositori.findGameByUsuariId(u.getId());
 			allPlayersStadistics.add(new StadisticsPlayer(u, allPartidas));
 		}
 		return allPlayersStadistics.toString();
 
 	}
+
+	// 6. GET /players/{id}/games: retorna el llistat de jugades per un jugador.
+
+	@GetMapping(value = "/player/{usuariId}/games")
+	public List<Game> getListGamesOneplayer(@PathVariable("usuariId") int usuariId) {
+		// retorna totes les partides d'un jugador
+
+		if (playerRepositori.findById(usuariId) != null) {
+			List<Game> partidasplayer = gameRepositori.findGameByUsuariId(usuariId);
+			return partidasplayer;
+		} else {
+
+			return null;
+		}
+
+	}
+
+	// 7.GET /players/ranking: retorna el ranking mig de tots els jugadors del
+	// sistema.
+	// És a dir, el percentatge mig d’èxits.
+
 	
-	//6. GET /players/{id}/games: retorna el llistat de jugades per un jugador.
 	
-	 @GetMapping(value="/player/{usuariId}/games")
-	 public List<Game> getListGamesOneplayer(@PathVariable("usuariId") int usuariId){
-	       //retorna totes les partides d'un jugador
+	
+	// 8.GET /players/ranking/loser: retorna el jugador amb pitjor percentatge
+	// d’èxit
+	@GetMapping(value = "/player/rancking/loser")
+	public List<Player> getListAllGamesRackingLoser() {
+
+		// retorna el jugador que te menys punts
+		List<StadisticsPlayer> allPlayersStadistics = new ArrayList<StadisticsPlayer>();
+		List<Player> allusers = new ArrayList<Player>();
+		List<Game> allPartidas = new ArrayList<Game>();
+		Ranking ranking = new Ranking(allPlayersStadistics);
+
+		allusers.addAll(playerRepositori.findAll());
+		for (Player u : allusers) {
+
+			allPartidas = gameRepositori.findGameByUsuariId(u.getId());
+			allPlayersStadistics.add(new StadisticsPlayer(u, allPartidas));
+		}
+		//Ranking ranking = new Ranking(allPlayersStadistics);
+
+		System.out.println(ranking.toString());
+		return ranking.getRankingUsersLosters();
+
+	}
+	
+	//9.GET /players/ranking/winner: retorna el jugador amb millor percentatge d’èxit
+
+	 @GetMapping(value="/player/rancking/winner")
+	    public List<Player> getListAllGamesRackingWinner(){
+	         //retorna totes les partides d'un jugado
+	         
+	        List<StadisticsPlayer> allPlayersStadistics= new ArrayList<StadisticsPlayer>();
+	        List<Player> allusers= new ArrayList<Player>();
+	        List<Game> allPartidas= new ArrayList<Game>();
 	        
-	        if(playerRepositori.findById(usuariId)!=null){
-	            List<Game> partidasplayer=gameRepositori.findGamesByUsuariId(usuariId);
-	              return partidasplayer;
-	        }else{
+	        allusers.addAll(playerRepositori.findAll());
+	        for (Player u: allusers){
 	            
-	            return null;
+	            allPartidas=gameRepositori.findGameByUsuariId(u.getId());
+	            allPlayersStadistics.add(new StadisticsPlayer(u, allPartidas));
 	        }
-	   
+	        Ranking ranking= new Ranking(allPlayersStadistics);
+	        
+	       return ranking.getRankingUsersWiners();
 	        
 	    }
-	
-	
-	
-	
-	
-	
-
 }

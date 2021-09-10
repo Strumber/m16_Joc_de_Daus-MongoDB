@@ -4,10 +4,7 @@ package cat.daus.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Joan
- */
+
 public class StadisticsPlayer implements IStadisticsPlayer{
     private Player player;
     private List<Game> partidasPlayer= new ArrayList<Game>();
@@ -17,9 +14,9 @@ public class StadisticsPlayer implements IStadisticsPlayer{
     private int totalLost;
     private int totalPlays;
     
-    public StadisticsPlayer(Player player, List<Game> partidas){
+    public StadisticsPlayer(Player player, List<Game> games){
         this.player=player;
-        this.partidasPlayer=partidas;
+        this.partidasPlayer=games;
     }
     
     
